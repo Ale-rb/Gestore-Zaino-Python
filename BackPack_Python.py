@@ -1,81 +1,81 @@
 import os
 
-class Zaino:
+class Backpack:
 
     def __init__(self):
-        self.cartella_corrente = os.path.dirname(__file__)
-        self.percorso_file = os.path.join(self.cartella_corrente, "Zaino.txt")
-        self.Lista_Zaino=[]
+        # Set up the file path correctly
+        self.current_folder = os.path.dirname(__file__)
+        self.file_path = os.path.join(self.current_folder, "backpack_data.txt")
+        self.backpack_list = []
         
-        
+        # Load existing data
         try:
-            with open(self.percorso_file, "r") as file:
-                for riga in file:
-                    self.Lista_Zaino.append(riga.strip()) # .strip() toglie il "\n" (invio) alla fine della riga
+            with open(self.file_path, "r") as file:
+                for line in file:
+                    self.backpack_list.append(line.strip())
         except FileNotFoundError:
-            print("File non trovato, ne verrà creato uno nuovo alla prima aggiunta.")
+            print("No saved data found. A new file will be created upon saving.")
             
-    def salva_su_disco(self):
-        # Creiamo un metodo dedicato solo al salvataggio totale
-        with open(self.percorso_file, "w") as file:
-            for x in self.Lista_Zaino:
-                file.write(x + "\n")
-        print("Dati salvati correttamente nel file.")
+    def save_to_disk(self):
+        """Saves the entire list to the text file."""
+        with open(self.file_path, "w") as file:
+            for item in self.backpack_list:
+                file.write(item + "\n")
+        print("Data successfully saved to disk.")
         
-    def aggiungi_materia(self,Materia):
-        self.Lista_Zaino.append(Materia)
-        with open("Zaino.txt", "a") as file:
-            file.write(Materia +"\n")
+    def add_subject(self, subject):
+        self.backpack_list.append(subject)
+        # Immediate append to file for safety
+        with open(self.file_path, "a") as file:
+            file.write(subject + "\n")
     
-    def rimuovi_materia(self,Materia):
-        if Materia in self.Lista_Zaino:
-            self.Lista_Zaino.remove(Materia)
-            with open("Zaino.txt","w") as file:
-                for x in self.Lista_Zaino:
-                    file.write(x+"\n")
-                print("Materia: ", Materia, "rimossa")
-                print("Lista aggiornata: ")
-                self.mostra_zaino()
-            
+    def remove_subject(self, subject):
+        if subject in self.backpack_list:
+            self.backpack_list.remove(subject)
+            self.save_to_disk() # Refresh the file
+            print(f"Subject: {subject} removed.")
+            print("Updated list:")
+            self.show_backpack()
         else:
-            print("Materia non trovata.")
+            print("Subject not found in backpack.")
             
-        
-        
-    def mostra_zaino(self):
-        for x in self.Lista_Zaino:
-            print(x)
+    def show_backpack(self):
+        if not self.backpack_list:
+            print("The backpack is empty.")
+        else:
+            for item in self.backpack_list:
+                print(f"- {item}")
 
 def main():
-    mio_zaino=Zaino()
+    my_backpack = Backpack()
     while True:
-        print("-----menu-----")
-        print("1.Aggiungi")
-        print("2.Mostra Zaino")
-        print("3.Rimuovi materia")
-        print("4.Esci")
+        print("\n----- MAIN MENU -----")
+        print("1. Add Subject")
+        print("2. Show Backpack")
+        print("3. Remove Subject")
+        print("4. Save and Exit")
         
-        scelta=input("Segli una voce dal menu: ")
+        choice = input("Select an option: ")
         
-        if scelta=="1":
-            Materia=input("Inserisci la materia da aggiungere: ")
-            mio_zaino.aggiungi_materia(Materia)
-            print("Materia aggiunta: ",Materia)
-            mio_zaino.mostra_zaino()
+        if choice == "1":
+            subject = input("Enter the subject to add: ")
+            my_backpack.add_subject(subject)
+            print(f"Added: {subject}")
             
-        elif scelta=="2":
-            print("Lista Materie: ")
-            mio_zaino.mostra_zaino()
+        elif choice == "2":
+            print("\nYour Subjects:")
+            my_backpack.show_backpack()
             
-        elif scelta=="3":
-            Materia=input("Quale materia vuoi eliminare?: ")
-            mio_zaino.rimuovi_materia(Materia)
+        elif choice == "3":
+            subject = input("Which subject do you want to remove?: ")
+            my_backpack.remove_subject(subject)
             
-        elif scelta=="4":
-            mio_zaino.salva_su_disco()
-            print("Chiusura programma...")
+        elif choice == "4":
+            my_backpack.save_to_disk()
+            print("Exiting system...")
             break
         else:
-            print("Voce menu non valida")
+            print("Invalid option. Please try again.")
             
-main()
+if __name__ == "__main__":
+    main()
